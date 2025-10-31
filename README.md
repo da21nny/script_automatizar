@@ -21,35 +21,10 @@ Cada función es independiente y puede ejecutarse desde un **menú principal**.
 ## ⚙️ Requisitos
 
 - **Python 3.x**
-- Módulos estándar: `os`, `shutil`, `time`, `datetime`,
+- Módulos estándar: `os`, `shutil`, `time`, `datetime`, `tkinter`, `filedialog`, `messagebox`
 - Editor recomendado: Visual Studio Code o Thonny
 - Sistema operativo: Windows, Linux o macOS
 
+## ➕ Opcional
+- Pyinstaller para generar un executable del script para que sea mas amigable al usuario
 ---
-
-## 🧩 Menú principal (ejemplo)
-
-```python
-def menu():
-    print("""
-    === Asistente de Automatización de Archivos ===
-    1. Organizar archivos
-    2. Crear backup
-    3. Simular formateo
-    4. Buscar duplicados
-    5. Gestor de almacenamiento
-    0. Salir
-    """)
-    opcion = input("Selecciona una opción: ")
-    if opcion == "1":
-        organizar_archivos()
-    elif opcion == "2":
-        crear_backup()
-    elif opcion == "3":
-        simular_formateo()
-    elif opcion == "4":
-        buscar_duplicados()
-    elif opcion == "5":
-        gestor_almacenamiento()
-    else:
-        print("¡Hasta luego!")
