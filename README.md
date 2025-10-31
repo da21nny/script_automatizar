@@ -21,7 +21,7 @@ Cada función es independiente y puede ejecutarse desde un **menú principal**.
 ## ⚙️ Requisitos
 
 - **Python 3.x**
-- Módulos estándar: `os`, `shutil`, `time`, `datetime`, `json`
+- Módulos estándar: `os`, `shutil`, `time`, `datetime`,
 - Editor recomendado: Visual Studio Code o Thonny
 - Sistema operativo: Windows, Linux o macOS
 
