@@ -27,4 +27,8 @@ Cada función es independiente y puede ejecutarse desde un **menú principal**.
 
 ## ➕ Opcional
 - Pyinstaller para generar un executable del script para que sea mas amigable al usuario
+- Para instalar PYinstaller, desde la terminal de vscode o editor que este usando:
+> pip install pyinstaller
+- Para generar el executable :
+> pyinstaller --onefile --windowed --icon=icono.ico --name "Asistente_de_Archivos" asistente_de_archivos.py
 ---
