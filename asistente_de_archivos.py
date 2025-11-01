@@ -3,6 +3,7 @@ import shutil
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
+# === REGLAS DE ORGANIZACIÓN ===
 reglas = {
     # Documentos
     "pdf": "Documentos/PDF",
@@ -53,33 +54,32 @@ reglas = {
 # === FUNCIÓN PRINCIPAL ===
 def organizar_archivos():
     """Organiza los archivos de una carpeta según su extensión"""
-    carpeta = filedialog.askdirectory(title="Selecciona la carpeta a organizar")
+    carpeta = filedialog.askdirectory(title="Selecciona la carpeta a organizar") 
 
     if not carpeta:
-        messagebox.showwarning("Atención", "No seleccionaste ninguna carpeta.")
-        return
+        return None # El usuario canceló la selección
 
     total = 0
     otros = 0
 
     # Recorremos los archivos en la carpeta seleccionada
     for archivo in os.listdir(carpeta):
-        ruta = os.path.join(carpeta, archivo)
-        if os.path.isfile(ruta):
-            ext = archivo.split(".")[-1].lower()
-            if ext in reglas:
-                destino = os.path.join(carpeta, reglas[ext])
-            else:
+        ruta = os.path.join(carpeta, archivo) # Ruta completa del archivo
+        if os.path.isfile(ruta): # Si es un archivo
+            ext = archivo.split(".")[-1].lower() # Obtener la extensión en minúsculas
+            if ext in reglas: # Si la extensión está en las reglas
+                destino = os.path.join(carpeta, reglas[ext]) # Carpeta destino según la regla
+            else: # Si no está en las reglas, va a "Otros"
                 destino = os.path.join(carpeta, "Otros")
                 otros += 1
-            os.makedirs(destino, exist_ok=True)
-            shutil.move(ruta, os.path.join(destino, archivo))
-            total += 1
+            os.makedirs(destino, exist_ok=True) # Crear la carpeta si no existe
+            shutil.move(ruta, os.path.join(destino, archivo)) # Mover el archivo
+            total += 1 
 
     messagebox.showinfo(
         "Organización completada",
         f"✅ Se organizaron {total} archivos.\n📂 {otros} fueron enviados a la carpeta 'Otros'."
-    )
+    ) # Mostrar mensaje de éxito
 
 # === INTERFAZ GRÁFICA ===
 def crear_interfaz():
@@ -118,17 +118,17 @@ def crear_interfaz():
     # Botón 3 - Esquina Inferior Izquierda
     frame_inf_izq = tk.Frame(frame_principal, bg="#f4f4f4")
     frame_inf_izq.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
-    tk.Label(frame_inf_izq, text="Opción 3", font=("Arial", 14, "bold"), bg="#f4f4f4").pack()
-    tk.Label(frame_inf_izq, text="Descripción de\nla opción 3", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
-    boton3 = crear_boton_con_zoom(frame_inf_izq, "⚙️ Opción 3", "#FF9800")
+    tk.Label(frame_inf_izq, text="Copia de Seguridad (Backup)", font=("Arial", 14, "bold"), bg="#f4f4f4").pack()
+    tk.Label(frame_inf_izq, text="Crea copias de seguridad\nde las carpetas seleccionadas", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
+    boton3 = crear_boton_con_zoom(frame_inf_izq, "⚙️ Copia de Seguridad", "#FF9800")
     boton3.pack(pady=10)
 
     # Botón 4 - Esquina Inferior Derecha
     frame_inf_der = tk.Frame(frame_principal, bg="#f4f4f4")
     frame_inf_der.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
-    tk.Label(frame_inf_der, text="Opción 4", font=("Arial", 14, "bold"), bg="#f4f4f4").pack()
-    tk.Label(frame_inf_der, text="Descripción de\nla opción 4", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
-    boton4 = crear_boton_con_zoom(frame_inf_der, "🔧 Opción 4", "#9C27B0")
+    tk.Label(frame_inf_der, text="Gestor de almacenamiento", font=("Arial", 14, "bold"), bg="#f4f4f4").pack()
+    tk.Label(frame_inf_der, text="Busca archivos grandes (mayores a 1Gb)\ny elija que hacer (eliminar o mantener.)", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
+    boton4 = crear_boton_con_zoom(frame_inf_der, "🔧 Gestionar Espacio", "#9C27B0")
     boton4.pack(pady=10)
 
     # Créditos en la parte inferior
