@@ -10,9 +10,8 @@ Ideal para practicar lógica, condicionales, bucles y manejo del sistema de arch
 Este script permite realizar distintas tareas desde consola:
 1. Organizar archivos por tipo  
 2. Crear copias de respaldo (backup)  
-3. Simular un formateo de disco (educativo)  
-4. Buscar archivos duplicados  
-5. Gestionar almacenamiento (detectar archivos grandes)
+3. Buscar archivos duplicados  
+4. Gestionar almacenamiento (detectar archivos grandes)
 
 Cada función es independiente y puede ejecutarse desde un **menú principal**.
 
