@@ -4,8 +4,9 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from pathlib import Path
 
+#función para crear el frame del gestor de almacenamiento
 def crear_frame_gestor(parent, on_close=None):
-    """Crea un Frame con el gestor de almacenamiento dentro de `parent`."""
+    #Crea un Frame con el gestor de almacenamiento dentro de `parent`.
     frame = tk.Frame(parent)
     archivos_encontrados = []
 
@@ -38,13 +39,14 @@ def crear_frame_gestor(parent, on_close=None):
     scan_thread = None
     SIZE_LIMIT = 512 * 1024 * 1024  # 512 MB
 
+    #=== FUNCIÓN PRINCIPAL ===
     def buscar_archivos_grandes():
         nonlocal archivos_encontrados
         archivos_encontrados.clear()
         for item in tree.get_children():
             tree.delete(item)
 
-        lbl_estado.config(text="Escaneando carpetas del usuario...")
+        lbl_estado.config(text="Escaneando en carpetas del usuario...")
         stop_event.clear()
 
         total_archivos = 0
@@ -92,6 +94,7 @@ def crear_frame_gestor(parent, on_close=None):
 
         btn_cancelar.config(state="disabled")
 
+    #=== ELIMINAR ARCHIVOS SELECCIONADOS ===
     def eliminar_seleccionados():
         seleccion = tree.selection()
         if not seleccion:
@@ -119,6 +122,7 @@ def crear_frame_gestor(parent, on_close=None):
                             f"Se eliminaron {eliminados} archivos.\nEspacio liberado: {espacio_mb:.2f} MB.")
         lbl_estado.config(text=f"Eliminados {eliminados} archivos | Liberados {espacio_mb:.2f} MB")
 
+    #=== INICIAR Y CANCELAR ESCANEO ===
     def iniciar_escaneo():
         nonlocal scan_thread
         stop_event.clear()
@@ -146,6 +150,7 @@ def crear_frame_gestor(parent, on_close=None):
     btn_cancelar.pack(side="right", padx=(0, 5))
     btn_salir.pack(side="right", padx=(0, 5))
 
+    #llamar función para comenzar el escaneo
     iniciar_escaneo()
 
     return frame
