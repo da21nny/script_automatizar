@@ -1,13 +1,11 @@
-import os
 import tkinter as tk
 from tkinter import messagebox, ttk
-from pathlib import Path
-import threading
 
 # importar funciones desde los módulos separados
-from organizador import organizar_archivos
+from organizador import crear_frame_organizador
 from gestor_almacenamiento import crear_frame_gestor
 from backup_automatico import crear_frame_backup
+from eliminar_duplicados import crear_frame_duplicados
 
 def crear_interfaz():
     root = tk.Tk()
@@ -34,23 +32,61 @@ def crear_interfaz():
     frame_sup_izq = tk.Frame(frame_principal, bg="#f4f4f4")
     frame_sup_izq.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
     tk.Label(frame_sup_izq, text="Organizador de Archivos", font=("Arial", 14, "bold"), bg="#f4f4f4").pack()
-    tk.Label(frame_sup_izq, text="Organiza tus archivos\npor tipo y extensión", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
-    boton1 = crear_boton_con_zoom(frame_sup_izq, "📁 Organizar Archivos", "#4CAF50", organizar_archivos)
+    tk.Label(frame_sup_izq, text="Organiza tus archivos\n en carpetas segun \n su extensión", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
+    
+    def mostrar_organizador():
+        frame_principal.pack_forget()
+        
+        fo = tk.Frame(main_container, bg="#f4f4f4")
+        fo.pack(fill="both", expand=True)
+        
+        def volver_inicio():
+            fo.destroy()
+            frame_principal.pack(fill="both", expand=True)
+        
+        # Usar la nueva función crear_frame_organizador
+        organizador_ui = crear_frame_organizador(fo, on_close=volver_inicio)
+        organizador_ui.pack(fill="both", expand=True)
+
+    # Modificar la línea donde se crea el botón del organizador
+    boton1 = crear_boton_con_zoom(frame_sup_izq, "📁 Organizar Archivos", "#4CAF50", mostrar_organizador)
     boton1.pack(pady=10)
 
     # Botón 2 - Esquina Superior Derecha
     frame_sup_der = tk.Frame(frame_principal, bg="#f4f4f4")
     frame_sup_der.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
     tk.Label(frame_sup_der, text="Archivos Duplicados", font=("Arial", 14, "bold"), bg="#f4f4f4").pack()
-    tk.Label(frame_sup_der, text="Encuentra y gestiona\narchivos duplicados", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
-    boton2 = crear_boton_con_zoom(frame_sup_der, "🔍 Buscar Duplicados", "#2196F3")
+    tk.Label(frame_sup_der, text="Encuentra y gestiona\narchivos duplicados\n", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
+
+    #Crear referencia para el frame de duplicados
+    duplicados_frame_ref = {"frame": None}
+   
+    def mostrar_duplicados():
+        # ocultar pantalla principal
+        frame_principal.pack_forget()
+        # crear contenedor de duplicados
+        fd = tk.Frame(main_container, bg="#f4f4f4")
+        fd.pack(fill="both", expand=True)
+        duplicados_frame_ref["frame"] = fd
+
+        def volver_inicio():
+            if duplicados_frame_ref["frame"] is not None:
+                duplicados_frame_ref["frame"].destroy()
+                duplicados_frame_ref["frame"] = None
+            frame_principal.pack(fill="both", expand=True)
+
+        # crear el gestor de duplicados dentro del frame fd pasando el callback de volver
+        duplicados_ui = crear_frame_duplicados(fd, on_close=volver_inicio)
+        duplicados_ui.pack(fill="both", expand=True)
+
+    boton2 = crear_boton_con_zoom(frame_sup_der, "🔍 Buscar Duplicados", "#2196F3", mostrar_duplicados)
     boton2.pack(pady=10)
 
     # Botón 3 - Esquina Inferior Izquierda
     frame_inf_izq = tk.Frame(frame_principal, bg="#f4f4f4")
     frame_inf_izq.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
-    tk.Label(frame_inf_izq, text="Copia de Seguridad (Backup)", font=("Arial", 14, "bold"), bg="#f4f4f4").pack()
-    tk.Label(frame_inf_izq, text="Crea copias de seguridad\nde las carpetas seleccionadas", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
+    tk.Label(frame_inf_izq, text="Copia de Seguridad", font=("Arial", 14, "bold"), bg="#f4f4f4").pack()
+    tk.Label(frame_inf_izq, text="Crea copias de seguridad\nde sus carpetas\n", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
 
     # Crear referencia para el frame de backup
     backup_frame_ref = {"frame": None}
@@ -80,7 +116,7 @@ def crear_interfaz():
     frame_inf_der = tk.Frame(frame_principal, bg="#f4f4f4")
     frame_inf_der.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
     tk.Label(frame_inf_der, text="Gestor de almacenamiento", font=("Arial", 14, "bold"), bg="#f4f4f4").pack()
-    tk.Label(frame_inf_der, text="Busca archivos grandes (mayores a 512MB)\ny elija que hacer (eliminar o mantener.)", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
+    tk.Label(frame_inf_der, text="Busca archivos grandes\n(mayores a 512MB) y elija\nque hacer (eliminar o mantener.)", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
 
     # referencia para el frame del gestor
     gestor_frame_ref = {"frame": None}
