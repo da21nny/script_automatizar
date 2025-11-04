@@ -14,7 +14,7 @@ FOLDERS_TO_INCLUDE = [
     ("Videos", "Videos"),
 ]
 
-
+#función para crear el frame del backup automático
 def crear_frame_backup(parent, on_close=None):
     """
     Crea y devuelve un Frame que ejecuta un backup (ZIP) de las carpetas:
@@ -23,6 +23,7 @@ def crear_frame_backup(parent, on_close=None):
     - on_close: callback opcional que se llamará cuando el usuario pulse 'Volver'
       (o cuando se cierre la vista). Si no se proporciona, se destruirá el toplevel.
     """
+    # Obtener rutas importantes
     user_home = Path.home()
     desktop = user_home / "Desktop"
 
@@ -61,6 +62,7 @@ def crear_frame_backup(parent, on_close=None):
 
     stop_event = threading.Event()
 
+    #función para encontrar las carpetas fuente
     def find_source_folders():
         """Devuelve lista de Path de carpetas existentes a incluir."""
         sources = []
@@ -98,6 +100,7 @@ def crear_frame_backup(parent, on_close=None):
 
         frame.after(0, lambda: btn_cancel.config(text="Volver", command=volver_action, state="normal"))
 
+    #función worker del backup (se ejecuta en hilo separado)
     def worker():
         sources = find_source_folders()
         if not sources:
@@ -151,6 +154,7 @@ def crear_frame_backup(parent, on_close=None):
             set_status_safe("Error creando ZIP.")
             finish_ui(f"Error al crear el ZIP: {e}")
 
+    #función para manejar el botón cancelar
     def on_cancel():
         # Si botón ya fue convertido a "Volver", ejecutar el callback
         if btn_cancel.cget("text") == "Volver":
@@ -173,21 +177,3 @@ def crear_frame_backup(parent, on_close=None):
     th.start()
 
     return frame
-
-
-"""def run_backup_gui():
-    #Compatibilidad: ejecuta el frame en una ventana propia (uso standalone).
-    root = tk.Tk()
-    root.title("Copia de Seguridad Automática (Backup ZIP)")
-    root.geometry("640x480")
-    root.resizable(False, False)
-    frame = crear_frame_backup(root, on_close=None)
-    frame.pack(fill="both", expand=True)
-    root.mainloop()
-"""
-
-# Comentario:
-# Este módulo provee crear_frame_backup(parent, on_close) que inserta la interfaz
-# de backup dentro de otro contenedor Tkinter (640x480 pensado para la ventana principal).
-# También exporta run_backup_gui() para ejecución independiente (crea su propio Tk).
-
