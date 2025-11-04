@@ -5,7 +5,7 @@ from tkinter import ttk, messagebox
 from pathlib import Path
 
 def crear_frame_gestor(parent, on_close=None):
-    """Crea un Frame con el gestor de almacenamiento dentro de `parent`."""
+    #Crea un Frame con el gestor de almacenamiento dentro de `parent`.
     frame = tk.Frame(parent)
     archivos_encontrados = []
 
@@ -44,7 +44,7 @@ def crear_frame_gestor(parent, on_close=None):
         for item in tree.get_children():
             tree.delete(item)
 
-        lbl_estado.config(text="Escaneando carpetas del usuario...")
+        lbl_estado.config(text="Escaneando en carpetas del usuario...")
         stop_event.clear()
 
         total_archivos = 0
