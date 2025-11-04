@@ -12,6 +12,8 @@ Este script permite realizar distintas tareas desde consola:
 2. Crear copias de respaldo (backup)  
 3. Buscar archivos duplicados  
 4. Gestionar almacenamiento (detectar archivos grandes)
+5. Limpieza de Archivos Basura
+6. Escaneo de Drivers (Sorpresa)
 
 Cada función es independiente y puede ejecutarse desde un **menú principal**.
 
