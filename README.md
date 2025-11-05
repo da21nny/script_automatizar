@@ -30,8 +30,8 @@ Cada función es independiente y puede ejecutarse desde un **menú principal**.
 - Pyinstaller para generar un executable del script para que sea mas amigable al usuario
 - Para instalar PYinstaller, desde la terminal de vscode o editor que este usando:
 > pip install pyinstaller
-- Paquetes externos para que el codigo funcione (se usa Send2Trash y Pillow):
-> pip install pillow send2trash
+- Algunas funciones necesitan Send2Trash, incluir en el pip:
+> pip install send2trash
 - Para generar el executable :
-> pyinstaller --onefile --windowed --icon=icono.ico --add-data "bsod.png" --name "Gestor_de_Archivos" main.py
+> pyinstaller --onefile --windowed --icon=icono.ico --add-data "bsod.gif;." --name "Gestor_de_Archivos" main.py
 ---
