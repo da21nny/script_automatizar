@@ -8,10 +8,10 @@ from tkinter import ttk, messagebox
 
 # Carpetas a incluir (tanto nombres en español como en inglés)
 FOLDERS_TO_INCLUDE = [
-    ("Downloads", "Descargas"),
     ("Music", "Musica"),
     ("Pictures", "Imagenes", "Imágenes"),
     ("Videos", "Videos"),
+    ("Downloads", "Descargas"),
 ]
 
 #función para crear el frame del backup automático
@@ -74,6 +74,10 @@ def crear_frame_backup(parent, on_close=None):
                     break
         return sources
 
+    def is_backup_file(file_path):
+        """Verifica si el archivo es un backup anterior."""
+        return file_path.name.startswith("backup_selected_") and file_path.suffix == ".zip"
+
     def add_list_item_safe(text):
         frame.after(0, lambda: listbox.insert(tk.END, text))
 
@@ -114,8 +118,11 @@ def crear_frame_backup(parent, on_close=None):
         for src in sources:
             for dirpath, _, filenames in os.walk(src):
                 for f in filenames:
-                    files_list.append(Path(dirpath) / f)
-                    total_files += 1
+                    file_path = Path(dirpath) / f
+                    # Ignorar archivos de backup anteriores
+                    if not is_backup_file(file_path):
+                        files_list.append(file_path)
+                        total_files += 1
 
         if total_files == 0:
             set_status_safe("No hay archivos para respaldar.")

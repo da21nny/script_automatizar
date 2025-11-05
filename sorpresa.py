@@ -4,7 +4,7 @@ import time, threading, sys, os
 
 #variables de configuración
 DURATION = 20
-BSOD_TIME = 10
+BSOD_TIME = 7
 BSOD_IMAGE = "bsod.gif"
 
 # Variables globales

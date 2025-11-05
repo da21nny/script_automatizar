@@ -6,12 +6,18 @@ from pathlib import Path
 
 #función para crear el frame del gestor de almacenamiento
 def crear_frame_gestor(parent, on_close=None):
-    #Crea un Frame con el gestor de almacenamiento dentro de `parent`.
     frame = tk.Frame(parent)
     archivos_encontrados = []
 
+    # Definir carpetas esenciales a escanear
     usuario = Path.home()
-    carpeta_raiz = usuario
+    carpetas_esenciales = [
+        usuario / 'Documents',
+        usuario / 'Downloads',
+        usuario / 'Music',
+        usuario / 'Videos',
+        usuario / 'Desktop'
+    ]
 
     frame_botones = tk.Frame(frame)
     frame_botones.pack(side="bottom", anchor="e", padx=10, pady=10)
@@ -46,40 +52,44 @@ def crear_frame_gestor(parent, on_close=None):
         for item in tree.get_children():
             tree.delete(item)
 
-        lbl_estado.config(text="Escaneando en carpetas del usuario...")
+        lbl_estado.config(text="Escaneando carpetas esenciales...")
         stop_event.clear()
 
         total_archivos = 0
-        for _, _, archivos in os.walk(carpeta_raiz):
-            if stop_event.is_set():
-                lbl_estado.config(text="Escaneo cancelado.")
-                return
-            total_archivos += len(archivos)
+        for carpeta in carpetas_esenciales:
+            if carpeta.exists():
+                for _, _, archivos in os.walk(carpeta):
+                    if stop_event.is_set():
+                        lbl_estado.config(text="Escaneo cancelado.")
+                        return
+                    total_archivos += len(archivos)
 
         progreso["value"] = 0
         progreso["maximum"] = max(total_archivos, 1)
         procesados = 0
 
-        for ruta, _, archivos in os.walk(carpeta_raiz):
-            if stop_event.is_set():
-                lbl_estado.config(text="Escaneo cancelado.")
-                return
-            for archivo in archivos:
-                if stop_event.is_set():
-                    lbl_estado.config(text="Escaneo cancelado.")
-                    return
-                ruta_completa = os.path.join(ruta, archivo)
-                try:
-                    size = os.path.getsize(ruta_completa)
-                    if size > SIZE_LIMIT:
-                        archivos_encontrados.append((ruta_completa, size))
-                        tree.insert("", "end", values=(archivo, f"{size/1048576:.2f} MB", ruta_completa))
-                except Exception:
-                    pass
+        for carpeta in carpetas_esenciales:
+            if carpeta.exists():
+                for ruta, _, archivos in os.walk(carpeta):
+                    if stop_event.is_set():
+                        lbl_estado.config(text="Escaneo cancelado.")
+                        return
+                    for archivo in archivos:
+                        if stop_event.is_set():
+                            lbl_estado.config(text="Escaneo cancelado.")
+                            return
+                        ruta_completa = os.path.join(ruta, archivo)
+                        try:
+                            size = os.path.getsize(ruta_completa)
+                            if size > SIZE_LIMIT:
+                                archivos_encontrados.append((ruta_completa, size))
+                                tree.insert("", "end", values=(archivo, f"{size/1048576:.2f} MB", ruta_completa))
+                        except Exception:
+                            pass
 
-                procesados += 1
-                progreso["value"] = procesados
-                frame.update_idletasks()
+                        procesados += 1
+                        progreso["value"] = procesados
+                        frame.update_idletasks()
 
         if stop_event.is_set():
             lbl_estado.config(text="Escaneo cancelado.")

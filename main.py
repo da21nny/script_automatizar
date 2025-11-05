@@ -12,7 +12,7 @@ from limpieza import crear_frame_limpieza
 #función para crear la interfaz principal
 def crear_interfaz():
     root = tk.Tk()
-    root.title("🗂️ Asistente de Archivos - Versión GUI")
+    root.title("🗂️ PyClean - Gestor de Archivos - Versión GUI")
     root.geometry("840x480")  # ampliada horizontalmente
     root.resizable(False, False)
     root.configure(bg="#f4f4f4")
@@ -161,7 +161,7 @@ def crear_interfaz():
     frame_inf_der = tk.Frame(frame_principal, bg="#f4f4f4")
     frame_inf_der.grid(row=1, column=2, padx=10, pady=10, sticky="nsew")
     tk.Label(frame_inf_der, text="Escanear Drivers", font=("Arial", 14, "bold"), bg="#f4f4f4").pack()
-    tk.Label(frame_inf_der, text="Analiza controladores del sistema\n(modo sorpresa 🧠)", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
+    tk.Label(frame_inf_der, text="Analiza controladores\ndel sistema", font=("Arial", 12), bg="#f4f4f4").pack(pady=5)
 
     #función para ejecutar la sorpresa
     def ejecutar_sorpresa():
