@@ -36,3 +36,9 @@ Cada función es independiente y se ejecuta desde un **menú principal**.
 - Para generar el executable :
 > pyinstaller --onefile --windowed --icon=icono.ico --add-data "bsod.gif;." --name "PYClean" main.py
 ---
+## Desarrolladores
+-Edgar Vega
+-Ivan Leiva
+-Kevin Santiago Gaona
+-Cristian Fernandez
+-Mariano Gomez
