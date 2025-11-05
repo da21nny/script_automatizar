@@ -1,19 +1,24 @@
-import os
-import threading
-import tkinter as tk
-from tkinter import ttk, messagebox
-from pathlib import Path
-import hashlib
+import os   # Para manejo de rutas y operaciones con archivos
+import threading  # Para ejecutar el escaneo en segundo plano
+import tkinter as tk  # Para la interfaz gráfica
+from tkinter import ttk, messagebox  # Widgets modernos y cuadros de diálogo
+from pathlib import Path  # Manejo moderno de rutas
+import hashlib  # Para generar hashes únicos de archivos
 
+# Módulo opcional: send2trash
+# Permite enviar archivos a la papelera de reciclaje en lugar de eliminarlos permanentemente
+# Si no está disponible, los archivos se eliminarán de forma permanente
 try:
     from send2trash import send2trash
 except ImportError:
     send2trash = None
 
+# Funcion principal para crear el frame o ventana donde se buscan los archivos duplicados
 def crear_frame_duplicados(parent, on_close=None):
     frame = tk.Frame(parent)
     archivos_encontrados = []
 
+# Rutas seguras para escanear
     usuario = Path.home()
     rutas_seguras = [
         usuario / "Desktop",
@@ -24,16 +29,19 @@ def crear_frame_duplicados(parent, on_close=None):
         usuario / "Videos"
     ]
 
-    # Crear widgets
+    # Crear widgets de la interfaz
     frame_botones = tk.Frame(frame)
     frame_botones.pack(side="bottom", anchor="e", padx=10, pady=10)
 
+#progreso de escaneo
     progreso = ttk.Progressbar(frame, orient="horizontal", mode="determinate", length=520)
     progreso.pack(pady=10)
 
+#Estado del escaneo
     lbl_estado = tk.Label(frame, text="Esperando para escanear...", font=("Arial", 10))
     lbl_estado.pack()
 
+# Crear Treeview para mostrar Resultados
     columnas = ("check", "Archivo", "Tamaño", "Ruta completa")
     tree = ttk.Treeview(frame, columns=columnas, show="headings", height=12)
     tree.heading("check", text="✔")
@@ -46,68 +54,74 @@ def crear_frame_duplicados(parent, on_close=None):
     tree.column("Ruta completa", width=340)
     tree.pack(pady=10, fill="both", expand=True)
 
+# Agrega una srollbar a la lista de resultados
     scrollbar = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
     tree.configure(yscroll=scrollbar.set)
     scrollbar.pack(side="right", fill="y")
 
+# Boton evento para detener el escaneo
     stop_event = threading.Event()
     scan_thread = None
 
-    # === FUNCIÓN PRINCIPAL ===
+    # Funcion principal para buscar archivos duplicados
     def buscar_archivos_duplicados():
+        
+        #que hace nonlocal: permite modificar la variable archivos_encontrados para que no se cree una nueva variable local
         nonlocal archivos_encontrados
-        archivos_encontrados.clear()
+        archivos_encontrados.clear() #limpia la lista de archivos duplicados
         for item in tree.get_children():
-            tree.delete(item)
+            tree.delete(item) #Limpia la lista de resultados
 
-        lbl_estado.config(text="Buscando archivos duplicados...")
+        lbl_estado.config(text="Buscando archivos duplicados...") #actualiza el estado
         stop_event.clear()
 
         # === Contar archivos totales (para la barra de progreso) ===
-        total_archivos = 0
-        for carpeta in rutas_seguras:
-            if not carpeta.exists():
+        total_archivos = 0 #cuenta todos los archivos
+        for carpeta in rutas_seguras: #recorre las rutas seguraas
+            if not carpeta.exists(): 
                 continue
-            for _, _, archivos in os.walk(carpeta):
+            for _, _, archivos in os.walk(carpeta): #
                 total_archivos += len(archivos)
 
-        progreso["value"] = 0
-        progreso["maximum"] = max(total_archivos, 1)
-        procesados = 0
+        progreso["value"] = 0 #inicia la barra de progreso en 0
+        progreso["maximum"] = max(total_archivos, 1) #establece el maximo de la barra
+        procesados = 0 #contador de archivos procesados
 
-        hashes = {}
-        duplicados = {}
+#que es hash: el hash es una cadena de caracteres que representa de forma unica el contenido de un archivo
+        hashes = {} #diccionario para guardar los hashes
+        duplicados = {} #diccionario para guardar los duplicados
 
         # === Escanear carpetas seguras del usuario ===
-        for carpeta in rutas_seguras:
+        for carpeta in rutas_seguras: 
             if not carpeta.exists():
                 continue
 
+                # Recorre los archivos en la carpeta
             for ruta, _, archivos in os.walk(carpeta):
                 # Saltar carpetas ocultas o del sistema
-                if "appdata" in ruta.lower() or "programdata" in ruta.lower():
+                if "appdata" in ruta.lower() or "programdata" in ruta.lower(): # Si son carpetas sensibles del sistema, las salta
                     continue
 
-                for archivo in archivos:
+                for archivo in archivos: 
                     if stop_event.is_set():
-                        lbl_estado.config(text="Escaneo cancelado.")
+                        lbl_estado.config(text="Escaneo cancelado.") 
                         return
-
-                    ruta_completa = os.path.join(ruta, archivo)
+                
+                    ruta_completa = os.path.join(ruta, archivo) 
 
                     try:
                         # Calcular hash en bloques (seguro para archivos grandes)
-                        hasher = hashlib.md5()
-                        with open(ruta_completa, "rb") as f:
-                            for bloque in iter(lambda: f.read(4096), b""):
-                                hasher.update(bloque)
+                        hasher = hashlib.md5() 
+                        with open(ruta_completa, "rb") as f: # abre el archivo en modo lectura binaria
+                            for bloque in iter(lambda: f.read(4096), b""): #lee el archivo en bloques de 4096 bytes 
+                                hasher.update(bloque) 
                         hash_archivo = hasher.hexdigest()
 
-                        # === Detección de duplicados ===
+                        # detector de  duplicados
                         if hash_archivo in hashes:
                             # si es la primera vez que aparece el duplicado, guardamos el original también
                             if hash_archivo not in duplicados:
-                                duplicados[hash_archivo] = [hashes[hash_archivo]]
+                                duplicados[hash_archivo] = [hashes[hash_archivo]] 
 
                             duplicados[hash_archivo].append(ruta_completa)
                             archivos_encontrados.append((ruta_completa, os.path.getsize(ruta_completa)))
@@ -124,21 +138,23 @@ def crear_frame_duplicados(parent, on_close=None):
                     progreso["value"] = procesados
                     frame.update_idletasks()
 
-        # === Mostrar resultados ===
-        if stop_event.is_set():
-            lbl_estado.config(text="Escaneo cancelado.")
+        # Mostramos los resultados finales
+        if stop_event.is_set(): #si se ha solicitado la cancelancion se detiene el escaneo
+            lbl_estado.config(text="Escaneo cancelado.") 
             return
 
-        if archivos_encontrados:
+        if archivos_encontrados: #si se encontraron duplicados 
             lbl_estado.config(text=f"Escaneo completado: {len(archivos_encontrados)} duplicados encontrados.")
+            # monstrar mensaje con la cantidad de archivos duplicados encontrados
             messagebox.showinfo("Completado", f"Se encontraron {len(archivos_encontrados)} archivos duplicados.")
-        else:
+        else: #si no
             lbl_estado.config(text="No se encontraron archivos duplicados.")
+            #mostrar mensaje que no se encontraron
             messagebox.showinfo("Sin resultados", "No se encontraron archivos duplicados.")
 
         btn_cancelar.config(state="disabled")
 
-    # === CHECKBOXES SIMULADOS ===
+    # checkboxes simulados
     def on_tree_click(event):
         region = tree.identify("region", event.x, event.y)
         if region == "cell":
@@ -152,29 +168,33 @@ def crear_frame_duplicados(parent, on_close=None):
 
     tree.bind("<Button-1>", on_tree_click)
 
+    # boton para seleccionar todos los archivos
     def seleccionar_todo():
         for iid in tree.get_children():
             vals = list(tree.item(iid, "values"))
             vals[0] = "✓"
             tree.item(iid, values=vals)
 
+    # boton para deseleccionar todos los archivos
     def deseleccionar_todo():
         for iid in tree.get_children():
             vals = list(tree.item(iid, "values"))
             vals[0] = "☐"
             tree.item(iid, values=vals)
 
-    # === ELIMINAR ARCHIVOS SELECCIONADOS ===
+    # boton para eliminar los archivos seleccionados
     def eliminar_seleccionados():
         seleccion = [iid for iid in tree.get_children() if tree.item(iid, "values")[0] == "✓"]
-        if not seleccion:
+        if not seleccion: # si no hay seleccionados mostrar advertencia
             messagebox.showwarning("Atención", "No seleccionaste ningún archivo para eliminar.")
             return
 
+        #solicitar confirmacion antes de eliminar
         confirm = messagebox.askyesno("Confirmar eliminación", "¿Deseas enviar los archivos seleccionados a la papelera?")
         if not confirm:
             return
 
+        #cantidad de archivos eliminados y espacio liberado 
         eliminados = 0
         espacio_liberado = 0
         for item in seleccion:
