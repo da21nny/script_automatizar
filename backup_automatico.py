@@ -119,8 +119,8 @@ def crear_frame_backup(parent, on_close=None):
             for dirpath, _, filenames in os.walk(src):
                 for f in filenames:
                     file_path = Path(dirpath) / f
-                    # Ignorar archivos de backup anteriores
-                    if not is_backup_file(file_path):
+                    # Ignorar archivos de backup anteriores y archivos .exe
+                    if not is_backup_file(file_path) and file_path.suffix.lower() != '.exe':
                         files_list.append(file_path)
                         total_files += 1
 
