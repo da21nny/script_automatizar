@@ -250,21 +250,35 @@ def crear_frame_limpieza(parent, on_close=None):
         except Exception:
             msg = "Papelera del sistema (requiere send2trash para uso completo)." if send2trash else f"Papelera local: {LOCAL_TRASH}"
             messagebox.showinfo("Papelera", msg)
+
+    #funciones para seleccionar/deseleccionar todo
     def seleccionar_todo():
         for iid in tree.get_children():
             vals = list(tree.item(iid, "values"))
             vals[0] = "✓"
             tree.item(iid, values=vals)
 
+    def deseleccionar_todo():
+        for iid in tree.get_children():
+            vals = list(tree.item(iid, "values"))
+            vals[0] = "☐"
+            tree.item(iid, values=vals)
+ 
+    
     # Botones de acción
-    scan_btn = tk.Button(btn_frame, text="🔎 Escanear", command=iniciar_escaneo, bg="#2196F3", fg="white")
+    scan_btn = tk.Button(btn_frame, text="🔎 Escanear", command=iniciar_escaneo, bg="#4CAF50", fg="white")
     scan_btn.grid(row=0, column=0, padx=4)
-    cancel_btn = tk.Button(btn_frame, text="✖ Cancelar", command=cancelar_escaneo, bg="#B71C1C", fg="white", state="disabled")
+    cancel_btn = tk.Button(btn_frame, text="✖ Cancelar", command=cancelar_escaneo, bg="#f44336", fg="white", state="disabled")
     cancel_btn.grid(row=0, column=1, padx=4)
-    tk.Button(btn_frame, text="🗑️ Mover seleccionados", command=mover_seleccionados, bg="#f44336", fg="white").grid(row=0, column=2, padx=4)
-    tk.Button(btn_frame, text="📁 Abrir papelera", command=abrir_trash, bg="#9E9E9E", fg="white").grid(row=0, column=3, padx=4)
-    tk.Button(btn_frame, text="↩️ Volver", command=(on_close if on_close else frame.destroy), bg="#607D8B", fg="white").grid(row=0, column=4, padx=8)
-    tk.Button(btn_frame, text="☑️ Seleccionar Todo", command=seleccionar_todo, bg="#8BC34A", fg="white").grid(row=0, column=5, padx=4)
+    tk.Button(btn_frame, text="☑️ Seleccionar Todo", command=seleccionar_todo, bg="#2196F3", fg="white").grid(row=0, column=2, padx=4)
+    tk.Button(btn_frame, text="☐ Deseleccionar Todo", command=deseleccionar_todo, bg="#9E9E9E", fg="white").grid(row=0, column=3, padx=4)
+    tk.Button(btn_frame, text="🗑️ Mover seleccionados", command=mover_seleccionados, bg="#FF9800", fg="white").grid(row=0, column=4, padx=4)
+    tk.Button(btn_frame, text="🗄 Abrir papelera", command=abrir_trash, bg="#757575", fg="white").grid(row=0, column=5, padx=4)
+    
+    # Botón Volver separado al final
+    tk.Button(btn_frame, text="↩️ Volver", command=(on_close if on_close else frame.destroy), bg="#607D8B", fg="white").grid(row=0, column=6, padx=(20,4))
+#   tk.Button(btn_frame, text="↩️ Volver", command=(on_close if on_close else frame.destroy), bg="#607D8B", fg="white").grid(row=0, column=4, padx=8)
+
 
     nota_text = "Los archivos se moverán a la Papelera de reciclaje del sistema." if send2trash else f"send2trash no instalado. Los archivos se moverán a: {LOCAL_TRASH}"
     nota = tk.Label(frame, text=nota_text + "\n(Se recomienda revisar antes de vaciar)", bg="#f4f4f4", fg="#666", justify="left")
